@@ -1,25 +1,28 @@
 import { useEffect, useState } from "react";
 import { Button, Container, Table } from "react-bootstrap";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import api from "../services/api";
+import MisReservasBorrar from "./MisReservasBorrar";
 
 const MisReservasList = () => {
     const [reservas, setReservas] = useState([]);
-    const navigate = useNavigate();
+    const [reservaSeleccionada, setReservaSeleccionada] = useState(null);
 
-    useEffect(() => { 
-        const peticion = async () => {
+    useEffect(() => {
+        const fetchReservas = async () => {
             try {
                 const response = await api.get('/mis-reservas');
                 setReservas(response.data);
             } catch (err) {
-                // setError('No se puede completar la operación');
-                navigate('/login')
-                console.log(err);
+                console.log("Error al obtener reservas:", err);
             }
         };
-        peticion();
-    }, []); // <-- Agrega el arreglo de dependencias vacío
+        fetchReservas();
+    }, []);
+
+    const eliminarReservaDelEstado = (id) => {
+        setReservas(reservas.filter((reserva) => reserva.id !== id));
+    };
 
     return (
         <Container>
@@ -27,10 +30,9 @@ const MisReservasList = () => {
                 <thead>
                     <tr>
                         <th>ID</th>  
-                        <th>Instalacion</th> 
+                        <th>Instalación</th> 
                         <th>Hora reserva</th>
                         <th>Fecha reserva</th>
-                        <th>Editar</th>
                         <th>Borrar</th>
                     </tr>
                 </thead>
@@ -42,12 +44,7 @@ const MisReservasList = () => {
                             <td>{reserva.horario.horaInicio}</td>
                             <td>{reserva.fecha}</td>
                             <td>
-                                <Button as={Link} to={`/mis-reservas/edit/${reserva.id}`} className="btn-success">
-                                    Editar
-                                </Button>
-                            </td>                            
-                            <td>
-                                <Button as={Link} to={`/mis-reservas/del/${reserva.id}`} className="btn-danger">
+                                <Button onClick={() => setReservaSeleccionada(reserva)} className="btn-danger">
                                     Eliminar
                                 </Button>
                             </td>
@@ -55,7 +52,12 @@ const MisReservasList = () => {
                     ))}
                 </tbody>
             </Table>
-            {/*error && <p style={{ color: 'red' }}>{error}</p>*/}
+
+            <MisReservasBorrar
+                reserva={reservaSeleccionada}
+                onClose={() => setReservaSeleccionada(null)}
+                onDelete={eliminarReservaDelEstado}
+            />
         </Container>
     );
 };

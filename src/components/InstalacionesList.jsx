@@ -20,7 +20,7 @@ const InstalacionesList = () => {
             }
         };
         peticion();
-    }, []); // <-- Agrega el arreglo de dependencias vacío
+    }, []);
 
     return (
         <Container>

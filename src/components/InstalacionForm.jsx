@@ -39,7 +39,7 @@ const InstalacionForm = () =>{
     const deleteForm = async(event) => {
         event.preventDefault();
         try {
-            const response = await api.delete('/admin/instalacion/'+id, { id, nombre });
+            const response = await api.delete('/admin/instalacion/'+ id, { id, nombre });
             /*
             setId(response.data.id);
             setNombre(response.data.nombre);
